@@ -1,0 +1,219 @@
+import os
+
+# first part of confusion array (copied from original challenge)
+conf1 = [0xac,0xd1,0x25,0x94,0x1f,0xb3,0x33,0x28,0x7c,0x2b,0x17,0xbc,0xf6,0xb0,0x55,0x5d,
+0x8f,0xd2,0x48,0xd4,0xd3,0x78,0x62,0x1a,0x02,0xf2,0x01,0xc9,0xaa,0xf0,0x83,0x71,
+0x72,0x4b,0x6a,0xe8,0xe9,0x42,0xc0,0x53,0x63,0x66,0x13,0x4a,0xc1,0x85,0xcf,0x0c,
+0x24,0x76,0xa5,0x6e,0xd7,0xa1,0xec,0xc6,0x04,0xc2,0xa2,0x5c,0x81,0x92,0x6c,0xda,
+0xc6,0x86,0xba,0x4d,0x39,0xa0,0x0e,0x8c,0x8a,0xd0,0xfe,0x59,0x96,0x49,0xe6,0xea,
+0x69,0x30,0x52,0x1c,0xe0,0xb2,0x05,0x9b,0x10,0x03,0xa8,0x64,0x51,0x97,0x02,0x09,
+0x8e,0xad,0xf7,0x36,0x47,0xab,0xce,0x7f,0x56,0xca,0x00,0xe3,0xed,0xf1,0x38,0xd8,
+0x26,0x1c,0xdc,0x35,0x91,0x43,0x2c,0x74,0xb4,0x61,0x9d,0x5e,0xe9,0x4c,0xbf,0x77,
+0x16,0x1e,0x21,0x1d,0x2d,0xa9,0x95,0xb8,0xc3,0x8d,0xf8,0xdb,0x34,0xe1,0x84,0xd6,
+0x0b,0x23,0x4e,0xff,0x3c,0x54,0xa7,0x78,0xa4,0x89,0x33,0x6d,0xfb,0x79,0x27,0xc4,
+0xf9,0x40,0x41,0xdf,0xc5,0x82,0x93,0xdd,0xa6,0xef,0xcd,0x8d,0xa3,0xae,0x7a,0xb6,
+0x2f,0xfd,0xbd,0xe5,0x98,0x66,0xf3,0x4f,0x57,0x88,0x90,0x9c,0x0a,0x50,0xe7,0x15,
+0x7b,0x58,0xbc,0x07,0x68,0x3a,0x5f,0xee,0x32,0x9f,0xeb,0xcc,0x18,0x8b,0xe2,0x57,
+0xb7,0x49,0x37,0xde,0xf5,0x99,0x67,0x5b,0x3b,0xbb,0x3d,0xb5,0x2d,0x19,0x2e,0x0d,
+0x93,0xfc,0x7e,0x06,0x08,0xbe,0x3f,0xd9,0x2a,0x70,0x9a,0xc8,0x7d,0xd8,0x46,0x65,
+0x22,0xf4,0xb9,0xa2,0x6f,0x12,0x1b,0x14,0x45,0xc7,0x87,0x31,0x60,0x29,0xf7,0x73]
+
+# second part of confusion array (copied from original challenge)
+conf2 = [0x2c,0x97,0x72,0xcd,0x89,0xa6,0x88,0x4c,0xe8,0x83,0xeb,0x59,0xca,0x50,0x3f,0x27,
+0x4e,0xae,0x43,0xd5,0x6e,0xd0,0x99,0x7b,0x7c,0x40,0x0c,0x52,0x86,0xc1,0x46,0x12,
+0x5a,0x28,0xa8,0xbb,0xcb,0xf0,0x11,0x95,0x26,0x0d,0x34,0x66,0x22,0x18,0x6f,0x51,
+0x9b,0x3b,0xda,0xec,0x5e,0x00,0x2a,0xf5,0x8f,0x61,0xba,0x96,0xb3,0xd1,0x30,0xdc,
+0x33,0x75,0xe9,0x6d,0xc8,0xa1,0x3a,0x3e,0x5f,0x9d,0xfd,0xa9,0x31,0x9f,0xaa,0x85,
+0x2f,0x92,0xaf,0x67,0x78,0xa5,0xab,0x03,0x21,0x4f,0xb9,0xad,0xfe,0xf3,0x42,0xfc,
+0x17,0xd7,0xee,0xa3,0xd8,0x80,0x14,0x2e,0xa0,0x47,0x55,0xc4,0xff,0xe5,0x13,0x3f,
+0x81,0xb6,0x7a,0x94,0xd0,0xb5,0x54,0xbf,0x91,0xa7,0x37,0xf1,0x6b,0xc9,0x1b,0xb1,
+0x3c,0xb6,0xd9,0x32,0x24,0x8d,0xf2,0x82,0xb4,0xf9,0xdb,0x7d,0x44,0xfb,0x1e,0xd4,
+0xea,0x5d,0x35,0x69,0x23,0x71,0x57,0x01,0x06,0xe4,0x55,0x9a,0xa4,0x58,0x56,0xc7,
+0x4a,0x8c,0x8a,0xd6,0x6a,0x49,0x70,0xc5,0x8e,0x0a,0x62,0xdc,0x29,0x4b,0x42,0x41,
+0xcb,0x2b,0xb7,0xce,0x08,0xa1,0x76,0x1d,0x1a,0xb8,0xe3,0xcc,0x7e,0x48,0x20,0xe6,
+0xf8,0x45,0x93,0xde,0xc3,0x63,0x0f,0xb0,0xac,0x5c,0xba,0xdf,0x07,0x77,0xe7,0x4e,
+0x1f,0x28,0x10,0x6c,0x59,0xd3,0xdd,0x2d,0x65,0x39,0xb2,0x74,0x84,0x3d,0xf4,0xbd,
+0xc7,0x79,0x60,0x0b,0x4d,0x33,0x36,0x25,0xbc,0xe0,0x09,0xcf,0x5b,0xe2,0x38,0x9e,
+0xc0,0xef,0xd2,0x16,0x05,0xbe,0x53,0xf7,0xc2,0xc6,0xa2,0x24,0x98,0x1c,0xad,0x04]
+
+# diffusion array (copied from original challenge)
+diff = [0xf26cb481,0x16a5dc92,0x3c5ba924,0x79b65248,0x2fc64b18,0x615acd29,0xc3b59a42,0x976b2584,
+0x6cf281b4,0xa51692dc,0x5b3c24a9,0xb6794852,0xc62f184b,0x5a6129cd,0xb5c3429a,0x6b978425,
+0xb481f26c,0xdc9216a5,0xa9243c5b,0x524879b6,0x4b182fc6,0xcd29615a,0x9a42c3b5,0x2584976b,
+0x81b46cf2,0x92dca516,0x24a95b3c,0x4852b679,0x184bc62f,0x29cd5a61,0x429ab5c3,0x84256b97]
+
+# inverse diffuse array (computed, see compute_inverse.py for detail)
+inverse_diff = [4067210369, 379968658, 1012640036, 2041991752, 801524504, 1633340713, 3283458626, 2540381572,
+1827832244, 2769720028, 1530668201, 3061401682, 3324975179, 1516317133, 3049472666, 1805091877,
+3028415084, 3700561573, 2837724251, 1380481462, 1259876294, 3442041178, 2588066741, 629446507,
+2176085234, 2463933718, 615078716, 1213380217, 407619119, 701323873, 1117435331, 2217044887]
+
+def confuse(input_, output):
+    for j in range(32):
+        output[j] = conf1[input_[j]]
+        input_[j] = 0
+
+def diffuse(input_, output):
+    for j in range(32):
+        for k in range(32):
+            input_[j] ^= output[k] * ((diff[j] >> k) & 1)
+
+# last step of the cipher
+def compress(input_, output):
+    for i in range(16):
+        output[i] = conf1[input_[i*2]] ^ conf2[input_[i*2+1]]
+
+def inverse_diffuse(output, input_):
+    for j in range(32):
+        for k in range(32):
+            output[j] ^= input_[k] * ((inverse_diff[j] >> k) & 1)
+
+def forward_rounds(input_, output, n):
+    for i in range(n):
+        confuse(input_, output)
+        diffuse(input_, output)
+
+# compute the inverse confusion table, everything is well documented
+def compute_inverse_conf1():
+    res = [[] for i in range(256)]
+    for i in range(256):
+        res[conf1[i]].append(i)
+    print(res)
+    return res
+
+# result of compute_inverse_conf1
+inverse_conf1 = [[106], [26], [24, 94], [89], [56], [86], [227], [195], [228], [95], [188], [144], [47], [223], [70], [], [88], [], [245], [42], [247], [191], [128], [10], [204], [221], [23], [246], [83, 113], [131], [129], [4], [], [130], [240], [145], [48], [2], [112], [158], [7], [253], [232], [9], [118], [132, 220], [222], [176], [81], [251], [200], [6, 154], [140], [115], [99], [210], [110], [68], [197], [216], [148], [218], [], [230], [161], [162], [37], [117], [], [248], [238], [100], [18], [77, 209], [43], [33], [125], [67], [146], [183], [189], [92], [82], [39], [149], [14], [104], [184, 207], [193], [75], [], [215], [59], [15], [123], [198], [252], [121], [22], [40], [91], [239], [41, 181], [214], [196], [80], [34], [], [62], [155], [51], [244], [233], [31], [32], [255], [119], [], [49], [127], [21, 151], [157], [174], [192], [8], [236], [226], [103], [], [60], [165], [30], [142], [45], [65], [250], [185], [153], [72], [205], [71], [137, 171], [96], [16], [186], [116], [61], [166, 224], [3], [134], [76], [93], [180], [213], [234], [87], [187], [122], [], [201], [69], [53], [58, 243], [172], [152], [50], [168], [150], [90], [133], [28], [101], [0], [97], [173], [], [13], [], [85], [5], [120], [219], [175], [208], [135], [242], 
+[66], [217], [11, 194], [178], [229], [126], [38], [44], [57], [136], [159], [164], [55, 64], [249], [235], [27], [105], [], [203], [170], [102], [46], [73], [1], [17], [20], [19], [], [143], [52], [111, 237], [231], [63], [139], [114], [167], [211], [163], [84], [141], [206], [107], [], [179], [78], [190], [35], [36, 124], [79], [202], [54], [108], [199], [169], [29], [109], [25], [182], [241], [212], [12], [98, 254], [138], [160], [], [156], [225], [177], [74], [147]]
+
+# generate a permutation based on provided input
+# assuming len(arr[i]) > 0 for all i (i.e. no empty elements)
+def generate_permutation(arr):
+    idx = [0 for _ in range(len(arr))]
+    limit = [len(x)-1 for x in arr]
+    terminate = False
+    while not terminate:
+        yield [arr[i][idx[i]] for i in range(len(arr))]
+        terminate = True
+        for i in range(len(arr)):
+            if idx[i] < limit[i]:
+                # if we found a value that can be changed
+                idx[i] += 1
+                for j in range(i):
+                    idx[j] = 0
+                terminate = False
+                break
+
+# to illustrate how generate_permutation works
+def test_generate_permutation():
+    arr = [[1, 2, 9, 10], [3, 4], [5]]
+    g = generate_permutation(arr)
+    for p in g:
+        print(p)
+
+# solve the n rounds of confusion and diffusion recursively
+def backward_rounds_helper(output, input_, n):
+    #print("beginning: out: {}, in: {}".format(output, input_))
+    if n == 0:
+        return input_
+    # first undo diffusion
+    inverse_diffuse(output, input_)
+    #print("after inverse diffuse: out: {}, in: {}".format(output, input_))
+
+    # try to undo the confusion
+    tmp = []
+    prod = 1
+    for j in range(32):
+        tmp.append(inverse_conf1[output[j]])
+        prod *= len(inverse_conf1[output[j]])
+    if prod == 0:
+        # we hit a dead end, some value are irreversible
+        return None
+    g = generate_permutation(tmp)
+    for p in g:
+        #print(p)
+        input_ = bytearray(p)
+        output = bytearray(32)
+        res = backward_rounds_helper(output, input_, n-1)
+        if res is not None:
+            return res
+
+# test the recursion algorithm
+def test_recursion(n):
+    input_ = bytearray(os.urandom(32))
+    print("original input: {}".format(input_))
+    output = bytearray(32)
+    # do forward n times
+    forward_rounds(input_, output, n)
+
+    input_copy = bytearray(input_)
+    print("input after forward: {}".format(input_copy))
+
+    # zero out output
+    output = bytearray(32)
+    res = backward_rounds_helper(output, input_copy, n)
+    print("result after backward: {}".format(res))
+
+    # verify res (res does not have to the same as original input)
+    output = bytearray(32)
+    forward_rounds(res, output, n)
+    print("result after forward using input from backward: {}".format(res)) # expecting input after forward
+
+# compute the per-byte reverse lookup table for compress
+# return a map (byte -> [(byte1, byte2), ...]) for each byte
+def compute_expansion_map():
+    res = [[] for _ in range(256)]
+    for k in range(256):
+        for i in range(256):
+            # conf2[?] == tmp, if applicable
+            tmp = conf1[i] ^ k
+            try:
+                # https://stackoverflow.com/a/6294205
+                indices = [idx for idx, x in enumerate(conf2) if x == tmp]
+                for x in indices:
+                    res[k].append((i, x))
+            except ValueError:
+                # otherwise, it's not in conf2, we need to change a value of conf1
+                continue
+    return res
+
+# generate all possible 32 byte expansions of a 16 byte using the per-byte expansion map
+def expand(output):
+    m = compute_expansion_map()
+    sub_map = [m[x] for x in output]
+    g = generate_permutation(sub_map)
+    for p in g:
+        res = []
+        for x1, x2 in p:
+            res.append(x1)
+            res.append(x2)
+        yield bytearray(res)
+
+# solve the challenge (this may take a few minutes)
+def solve():
+    target = "Hire me!!!!!!!!"
+    # add trailing zeros to make output 32 byte long (you can add anything you want)
+    output = bytearray(target + "\x00" * 17, "ascii")
+
+    g = expand(output)
+    count = 0
+    for input_ in g:
+        print("trying: {}".format(input_))
+        output_test = bytearray(32)
+        res = backward_rounds_helper(output_test, input_, 256)
+        if res is None:
+            continue
+        print("solution: {}".format(res)) # suppose to be a working solution
+
+        # verify the result, it should produce the target
+        output2 = bytearray(32)
+        forward_rounds(res, output2, 256)
+        compress(res, output2)
+        print("output produced by solution: {}".format(output2))
+
+        count += 1
+        if count > 1:
+            break
+
+if __name__ == "__main__":
+    test_recursion(256)
+    #solve()
